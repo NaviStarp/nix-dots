@@ -2,7 +2,7 @@
 
 {
   nix.settings = {
-    auto-optimise-store = true;      
+    auto-optimise-store = false;      
     max-jobs = "auto";
     cores = 0;                       
     trusted-users = [ "ivan" ];      

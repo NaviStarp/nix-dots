@@ -48,7 +48,7 @@
       tree = "eza --tree --icons";
       cd = "z";
       cat = "bat --paging=never"; 
-      update = "sudo nixos-rebuild switch";
+      update = "sudo nixos-rebuild switch --flake /home/ivan/dotfiles#nixos";
       clean = "sudo nix-collect-garbage -d";
     };
 

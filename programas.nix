@@ -1,17 +1,39 @@
-{ pkgs, ... }:
+{ pkgs,inputs, ... }:
 
 {
   nixpkgs.config.allowUnfree = true;
 
   environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; 
-    XCURSOR_THEME = "Bibata-Modern-Classic";
+    NIXOS_OZONE_WL = "1";
+    XCURSOR_THEME = "apple_cursor";
     XCURSOR_SIZE = "24";
   };
 
   programs.hyprland.enable = true;
-  programs.niri.enable = true; 
+  programs.niri.enable = true;
+  programs.sway = {
+    enable = true;
+    package = pkgs.swayfx;
+  };
 
+  programs.thunar = {
+    enable = true;
+    plugins = with pkgs.xfce; [
+      thunar-volman
+      thunar-archive-plugin
+    ];
+  };
+
+  programs.xfconf.enable = true;
+
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+
+  virtualisation.docker.enable = true;
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-rocm;
+  };
   programs.kdeconnect.enable = true;
   hardware.graphics.enable32Bit = true;
 
@@ -22,49 +44,52 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    waybar 
-    swaynotificationcenter 
-    awww 
+    waybar
+    swaynotificationcenter
+    awww
     quickshell
-    libnotify 
-    rofi 
-    wl-clipboard 
-    cliphist 
+    libnotify
+    rofi
+    wl-clipboard
+    cliphist
+    gammastep
+    tela-icon-theme
 
-    
     grim
     slurp
     satty
     libcanberra-gtk3
-    swappy 
-    wl-screenrec 
+    libnotify
+    ffmpeg
+    swappy
+    wl-screenrec
 
-    
     hypridle
     hyprlock
     hyprpicker
     polkit_gnome
-    brightnessctl 
+    brightnessctl
 
-    
     ghostty
-    zsh
     fastfetch
     btop
     tldr
-    neovim
+    inputs.antigravity.packages.${pkgs.system}.default
+    inputs.antigravity.packages.${pkgs.system}.google-antigravity-cli 
 
-    
     gh
     bun
+    pnpm
     python3
     go
+    go-task
+    docker
     unrar
     sshfs
     sbctl
 
     brave
-    vesktop 
+    vesktop
     obsidian
     steam
     qbittorrent-enhanced
@@ -72,12 +97,11 @@
     networkmanagerapplet
     gparted
 
-    
-    catppuccin-grub
     papirus-icon-theme
+    apple-cursor
     volantes-cursors
-    bibata-cursors 
-    phinger-cursors 
+    bibata-cursors
+    phinger-cursors
     pywalfox-native
   ];
 }

@@ -1,12 +1,15 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
+  system.stateVersion = "26.05";
+
   imports = [
     ./hardware-configuration.nix
     ./programas.nix
     ./modulos/zsh.nix
     ./modulos/nvim.nix
     ./modulos/optimizacion.nix
+    ./modulos/navegador.nix
   ];
 
   # Raton razer
@@ -16,14 +19,34 @@
   '';
   hardware.openrazer.enable = false;
 
-  boot.loader.grub.enable = false;
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.systemd-boot.configurationLimit = 10;
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  # boot.loader.systemd-boot.xbootldrMountPoint = "/boot";
+
+  # Lanzaboote
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/etc/secureboot";
+    configurationLimit = 10;
+  };
+
+  # Configuración EFI
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/efi";
-  boot.loader.systemd-boot.xbootldrMountPoint = "/boot";
+  boot.loader.efi.efiSysMountPoint = "/boot";
+
+  # Kernel y gráficos
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.kernelModules = [ "amdgpu" ];
+
+  # Animación gráfica de arranque con Plymouth
+  boot.plymouth = {
+    enable = true;
+    theme = "breeze"; # Puedes usar "breeze", "spinner", o instalar temas adicionales
+  };
+
+  # Silenciar los mensajes de texto del kernel para que la animación sea limpia
+  boot.consoleLogLevel = 0;
+  boot.initrd.verbose = false;
+
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
@@ -32,10 +55,15 @@
     ];
   };
   services.xserver.videoDrivers = [ "amdgpu" ];
+
   boot.kernelParams = [
-    "video=HDMI-A-1:1920x1080@75e" # La 'e' al final fuerza el "Enable" (activado)
+    "quiet"
+    "splash"
+    "boot.shell_on_fail"
+    "udev.log_level=3"
+    "video=HDMI-A-1:1920x1080@75e"
     "video=DP-1:1920x1080@75"
-    "fbcon=map:0" # Mapea la consola al primer dispositivo detectado
+    "fbcon=map:0"
   ];
 
   nix.settings.experimental-features = [
@@ -66,9 +94,14 @@
 
   services.displayManager.gdm.enable = true;
 
+  services.displayManager.sddm = {
+    enable = false;
+    wayland.enable = true;
+  };
+
   services.xserver.xkb = {
     layout = "es";
-    variant = "";
+    variant = "nodeadkeys";
   };
 
   console.keyMap = "es";
@@ -90,9 +123,11 @@
     isNormalUser = true;
     description = "Ivan";
     extraGroups = [
-      "openrazer"
-      "networkmanager"
       "wheel"
+      "networkmanager"
+      "video"
+      "render"
+      "docker"
     ];
   };
   services.ratbagd.enable = true;
@@ -101,24 +136,21 @@
     enable = true;
     wlr.enable = true;
     extraPortals = [
+      pkgs.xdg-desktop-portal-wlr
       pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-gnome
     ];
     config = {
       common = {
         default = [ "gtk" ];
       };
-      niri = {
-        default = [
-          "gnome"
+      sway = {
+        default = lib.mkForce [
+          "wlr"
           "gtk"
         ];
       };
     };
   };
-
-
-  programs.hyprland.enable = true;
 
   networking.firewall.allowedTCPPorts = [
     80

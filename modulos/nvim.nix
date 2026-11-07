@@ -10,15 +10,17 @@
 
   environment.systemPackages = with pkgs; [
     git
-    gcc 
-    unzip 
+    gcc
+    unzip
     curl
-    xclip  
-    wl-clipboard  
-    fd  
-    ripgrep  
-    fzf  
+    xclip
+    wl-clipboard
+    fd
+    ripgrep
+    fzf
+    svelte-language-server
     nodejs
+    typescript
     (vimPlugins.nvim-treesitter.withPlugins (p: [
       p.lua
       p.nix
@@ -38,16 +40,18 @@
       p.markdown
       p.markdown_inline
     ]))
-    nil  
-    nixpkgs-fmt  
-    gopls  
+    nil
+    nixpkgs-fmt
+    gopls
     jdt-language-server
-    lua-language-server  
-    astro-language-server  
-    typescript-language-server  
-    vscode-langservers-extracted  
-    tailwindcss-language-server  
-    pyright  
+    lua-language-server
+    astro-language-server
+    typescript-language-server
+    vscode-langservers-extracted
+    tailwindcss-language-server
+    pyright
+    lazygit
+    delta
 
   ];
 }
